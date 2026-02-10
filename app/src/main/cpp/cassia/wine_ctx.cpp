@@ -2,6 +2,7 @@
 
 #include "wine_ctx.h"
 #include <sys/system_properties.h>
+#include <android/log.h>
 
 namespace cassia {
 std::string GetWineDebug() {
@@ -50,5 +51,15 @@ Process WineContext::Launch(std::string exe, std::vector<std::string> args, std:
 WineContext::~WineContext() {
     Launch("wineboot.exe", {"--end-session", "--shutdown"}, {}, Logger::GetPipe("wineboot")).WaitForExit();
     Process{runtimePath / "bin/wineserver", {"--kill"}, envVars, Logger::GetPipe("wineserver")}.WaitForExit();
+}
+
+void WineContext::HandlePointerEvent(int pointerId, double x, double y, int action) {
+    __android_log_print(ANDROID_LOG_DEBUG, "cassia.wine_ctx", "Pointer id=%d action=%d x=%f y=%f", pointerId, action, x, y);
+    // TODO: Translate into compositor/wine input events when available.
+}
+
+void WineContext::HandleKeyEvent(int scanCode, bool down) {
+    __android_log_print(ANDROID_LOG_DEBUG, "cassia.wine_ctx", "Key scan=%d down=%d", scanCode, down);
+    // TODO: Translate into compositor/wine keyboard events when available.
 }
 }

@@ -28,6 +28,20 @@ class WineContext {
     Process Launch(std::string exe, std::vector<std::string> args = {}, std::vector<std::string> envVars = {}, std::optional<LogPipe> logPipe = std::nullopt);
 
     /**
+     * @brief Handle a pointer event from the UI (touch/mouse).
+     * @param pointerId Identifier for the pointer.
+     * @param x X coordinate in view space.
+     * @param y Y coordinate in view space.
+     * @param action 0 = down, 1 = move, 2 = up
+     */
+    void HandlePointerEvent(int pointerId, double x, double y, int action);
+
+    /**
+     * @brief Handle a key event from the UI.
+     */
+    void HandleKeyEvent(int scanCode, bool down);
+
+    /**
      * @details This will attempt to shutdown the Wine prefix with wineboot and use wineserver to kill all other wine processes.
      */
     ~WineContext();

@@ -52,14 +52,26 @@ class InputHandler {
 
     private fun pointerDown(pointerId: Int, x: Double, y: Double) {
         Log.d(TAG, "Touch Down [$pointerId]: $x, $y")
+        try {
+            InputBridge.pointerEvent(pointerId, x, y, 0)
+        } catch (_: Throwable) {
+        }
     }
 
     private fun pointerMove(pointerId: Int, x: Double, y: Double) {
         Log.d(TAG, "Touch Move [$pointerId]: $x, $y")
+        try {
+            InputBridge.pointerEvent(pointerId, x, y, 1)
+        } catch (_: Throwable) {
+        }
     }
 
     private fun pointerUp(pointerId: Int) {
         Log.d(TAG, "Touch Up [$pointerId]")
+        try {
+            InputBridge.pointerEvent(pointerId, 0.0, 0.0, 2)
+        } catch (_: Throwable) {
+        }
     }
 
     fun onMotionEvent(view: View, event: MotionEvent): Boolean {
@@ -98,6 +110,10 @@ class InputHandler {
 
     private fun keyEvent(scanCode: Int, down: Boolean) {
         Log.d("cassia.app", "Key $scanCode = $down")
+        try {
+            InputBridge.keyEvent(scanCode, down)
+        } catch (_: Throwable) {
+        }
     }
 
     fun onKeyEvent(event: KeyEvent): Boolean {

@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <jni.h>
 #include <android/native_window_jni.h>
+#include <android/log.h>
 
 std::mutex stateMutex;
 std::optional<cassia::WineContext> wineCtx;
@@ -37,6 +38,24 @@ Java_cassia_app_CassiaManager_stopServer(
         jobject /* this */) {
     std::scoped_lock lock{stateMutex};
     wineCtx.reset();
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_cassia_app_input_InputBridge_pointerEvent(JNIEnv *env, jclass /* cls */, jint pointerId, jdouble x, jdouble y, jint action) {
+    __android_log_print(ANDROID_LOG_DEBUG, "cassia.native", "Pointer event id=%d action=%d x=%f y=%f", pointerId, action, x, y);
+    std::scoped_lock lock{stateMutex};
+    if (wineCtx.has_value()) {
+        wineCtx->HandlePointerEvent(static_cast<int>(pointerId), static_cast<double>(x), static_cast<double>(y), static_cast<int>(action));
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_cassia_app_input_InputBridge_keyEvent(JNIEnv *env, jclass /* cls */, jint scanCode, jboolean down) {
+    __android_log_print(ANDROID_LOG_DEBUG, "cassia.native", "Key event scan=%d down=%d", scanCode, down);
+    std::scoped_lock lock{stateMutex};
+    if (wineCtx.has_value()) {
+        wineCtx->HandleKeyEvent(static_cast<int>(scanCode), static_cast<bool>(down));
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL
